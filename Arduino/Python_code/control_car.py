@@ -22,7 +22,8 @@ class ControlCar:
             )
 
             print("Muon is connected.")
-            subprocess.call(" " + self.cmd_camera_vision, shell=True)
+            subprocess.Popen(self.cmd_camera_vision, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            
             
         except TimeoutError as e:
             print("Opps")
