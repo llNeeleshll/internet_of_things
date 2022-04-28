@@ -2,46 +2,59 @@ from sqlite3 import Time
 import serial.tools.list_ports as port_list
 import serial
 import keyboard
+import cv2
+import subprocess
+import numpy as np
 
-ports = list(port_list.comports())
+class ControlCar:
 
-for p in ports:
-    print (p)
+    def __init__(self):
+        self.cmd_camera_vision = 'python display_image.py'
+                
 
-serialPort = None
+    def initialize_and_control(self, port):
 
-try:
-    serialPort = serial.Serial(
-        port="COM4", baudrate=9600
-    )
-except TimeoutError as e:
-    print("Opps")
+        self.serialPort = None
 
-while True:
+        try:
+            self.serialPort = serial.Serial(
+                port=port, baudrate=9600
+            )
 
-    val = 0
+            print("Muon is connected.")
+            subprocess.call(" " + self.cmd_camera_vision, shell=True)
+            
+        except TimeoutError as e:
+            print("Opps")
 
-    key = keyboard.read_key()
+        while True:
 
-    if(key == "up"):
-        val = 'F'
-    elif(key == "down"):
-        val = 'B'
-    elif(key == "right"):
-        val = 'R'
-    elif(key == "left"):
-        val = 'L'
-    elif(key == "s"):
-        val = 'S'
-    else:
-        continue
-    
-    b_val = bytes(val, encoding="ascii")
+            val = 0
 
-    serialPort.write(b_val)
-    line = serialPort.readline()
-    # print(line)
+            key = keyboard.read_key()
 
-serialPort.close()
+            if(key == "up"):
+                val = 'F'
+            elif(key == "down"):
+                val = 'B'
+            elif(key == "right"):
+                val = 'R'
+            elif(key == "left"):
+                val = 'L'
+            elif(key == "s"):
+                val = 'S'
+            elif(key == "q"):
+                self.serialPort.close()
+                print("Muon is disconnected")
+                break
+            else:
+                continue
+            
+            b_val = bytes(val, encoding="ascii")
 
-pass
+            self.serialPort.write(b_val)
+            line = self.serialPort.readline()
+           
+if __name__ == "__main__":
+    car = ControlCar()
+    car.initialize_and_control("COM4")

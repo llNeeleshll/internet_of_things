@@ -54,7 +54,7 @@ void loop(){
     
   } 
 
-  if(distance_of_obstacle <= stop_distance && movement == 'F'){
+  if(distance_of_obstacle < stop_distance && movement == 'F'){
     Stop();
   }
   
