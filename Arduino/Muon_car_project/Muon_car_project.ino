@@ -1,9 +1,18 @@
 #include <AFMotor.h>
+#include "SoftwareSerial.h"
+#include "DFRobotDFPlayerMini.h"
+
+static const int PIN_MP3_TX = 5; // Connects to module's RX 
+static const int PIN_MP3_RX = 4; // Connects to module's TX 
+
+SoftwareSerial player_serial(PIN_MP3_RX, PIN_MP3_TX);
 
 AF_DCMotor motor1(1, MOTOR12_1KHZ); 
 AF_DCMotor motor2(2, MOTOR12_1KHZ); 
 AF_DCMotor motor3(3, MOTOR34_1KHZ);
 AF_DCMotor motor4(4, MOTOR34_1KHZ);
+
+DFRobotDFPlayerMini player;
 
 int trigger_pin = 2;
 int echo_pin = 3;
@@ -16,6 +25,23 @@ int stop_distance = 30;
 void setup() 
 {       
   Serial.begin(9600);  //Set the baud rate to your Bluetooth module.
+  player_serial.begin(9600);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+
+  player.setTimeOut ( 1000 ) ;
+
+  if (player.begin(player_serial)) {
+
+    digitalWrite(LED_BUILTIN, HIGH);
+    
+    player.volume(30);
+    delay(20);
+    player.play(2);
+  
+  }
+  
   pinMode(trigger_pin, OUTPUT);
   pinMode(echo_pin, INPUT);
   Stop();
